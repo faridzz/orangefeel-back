@@ -2,7 +2,7 @@ package digital.paisley.storage.service.controller;
 
 import digital.paisley.storage.service.dto.MetadataDTO;
 import digital.paisley.storage.service.dto.MinioMetadataDTO;
-import digital.paisley.storage.service.enums.MinioMetadata;
+import digital.paisley.storage.service.dto.UploadFileResponse;
 import digital.paisley.storage.service.service.IStorageService;
 import digital.paisley.storage.service.util.MetadataToDTO;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -15,9 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -38,7 +36,7 @@ public class StorageController {
             @RequestParam Map<String, Object> metadata) {
 
         MetadataDTO metadataDTO = MetadataToDTO.createMetadata(metadata, MinioMetadataDTO.class);
-        String fileAddress = storageService.uploadFile(fileStream, fileName, metadataDTO);
+        UploadFileResponse fileAddress = storageService.uploadFile(fileStream, fileName, metadataDTO);
 
         return ResponseEntity.ok("File uploaded successfully: " + fileAddress);
     }

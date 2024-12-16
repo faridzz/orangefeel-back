@@ -2,6 +2,7 @@ package digital.paisley.storage.service.service;
 
 import digital.paisley.storage.service.dto.MinioMetadataDTO;
 import digital.paisley.storage.service.dto.MetadataDTO;
+import digital.paisley.storage.service.dto.UploadFileResponse;
 import io.minio.MinioClient;
 import io.minio.StatObjectArgs;
 import io.minio.PutObjectArgs;
@@ -106,7 +107,8 @@ public class MinioService implements IStorageService {
     }
 
     @Override
-    public String uploadFile(MultipartFile fileStream, String fileName, MetadataDTO metadata) {
+    public UploadFileResponse uploadFile(MultipartFile fileStream, String fileName, MetadataDTO metadata) {
+
         if (!(metadata instanceof MinioMetadataDTO)) {
             throw new IllegalArgumentException("Invalid metadata type.");
         }
@@ -117,11 +119,11 @@ public class MinioService implements IStorageService {
         String originalFilename = fileStream.getOriginalFilename();
         String fileExtension = "";
         if (originalFilename != null && originalFilename.contains(".")) {
-            fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
+            fileExtension = originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
         }
 
         // Build a file with the correct format
-        String objectName = minioMetadata.getFolderName() + "/" + fileName + fileExtension;
+        String objectName = minioMetadata.getFolderName() + "/" + fileName ;
         try {
             minioClient.putObject(
                     PutObjectArgs.builder()
@@ -131,8 +133,12 @@ public class MinioService implements IStorageService {
                             .build()
             );
             log.info("File '{}' uploaded to '{}/{}'.", fileName, minioMetadata.getBucketName(), minioMetadata.getFolderName());
-
-            return minioMetadata.getBucketName() + "/" + objectName;
+            UploadFileResponse response = new UploadFileResponse();
+            response.setFileName(fileName);
+            response.setFileFormat(fileExtension);
+            response.setFileUrl(minioMetadata.getBucketName() + "/" + objectName);
+            response.setServiceName("Minio");
+            return response;
         } catch (Exception e) {
             log.error("Error uploading file '{}': {}", fileName, e.getMessage());
             throw new RuntimeException("Error uploading file: " + e.getMessage(), e);

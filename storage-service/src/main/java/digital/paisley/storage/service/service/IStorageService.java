@@ -1,6 +1,7 @@
 package digital.paisley.storage.service.service;
 
 import digital.paisley.storage.service.dto.MetadataDTO;
+import digital.paisley.storage.service.dto.UploadFileResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
@@ -16,9 +17,9 @@ public interface IStorageService {
      * @param fileStream File content as MultipartFile.
      * @param fileName   Name of the file to be stored.
      * @param metadata   Metadata for the storage.
-     * @return File location in storage
+     * @return UploadFileResponse
      */
-    String uploadFile(MultipartFile fileStream, String fileName, MetadataDTO metadata);
+    UploadFileResponse uploadFile(MultipartFile fileStream, String fileName, MetadataDTO metadata);
 
     /**
      * Downloads a file from the storage.
